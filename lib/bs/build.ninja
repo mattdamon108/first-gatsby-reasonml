@@ -1,0 +1,35 @@
+g_pkg_flg = -bs-package-name first-gatsby-reason -bs-ns FirstGatsbyReason
+src_root_dir = /Users/woonki/Documents/projects/first-gatsby-reason
+bsc = /Users/woonki/Documents/projects/first-gatsby-reason/node_modules/bs-platform/darwin/bsc.exe
+bsdep = /Users/woonki/Documents/projects/first-gatsby-reason/node_modules/bs-platform/darwin/bsb_helper.exe
+warnings = 
+bsc_flags = -bs-super-errors
+ppx_flags = 
+g_dpkg_incls = 
+g_ns = -bs-ns FirstGatsbyReason
+g_lib_incls = -I . -I src/images -I src/bindings -I src/pages -I src -I /Users/woonki/Documents/projects/first-gatsby-reason/node_modules/reason-react/lib/ocaml
+rule build_ast_from_re
+  command = $bsc  $warnings -bs-jsx 3 $bsc_flags -o $out -bs-syntax-only -bs-binary-ast $in
+  description = [34mBuilding[39m [2m${out}[22m
+build  src/pages/Index.reast : build_ast_from_re $src_root_dir/src/pages/Index.re
+rule mk_deps
+  command = $bsdep -hash abb359ea2b3849cfe4a9c9ce3a946ab0 $g_ns $in
+  restat = 1
+  description = [34mBuilding[39m [2m${out}[22m
+build  src/pages/Index.d : mk_deps src/pages/Index.reast
+rule ml_cmj_cmi
+  command = $bsc $g_pkg_flg -bs-suffix $g_lib_incls $warnings $bsc_flags -o $out $in
+  dyndep = $in_e.d
+  restat = 1
+  description = [34mBuilding[39m [2m${out}[22m
+build  src/pages/Index-FirstGatsbyReason.cmj |  src/pages/Index-FirstGatsbyReason.cmi $src_root_dir/src/pages/Index.bs.js : ml_cmj_cmi src/pages/Index.reast ||  src/pages/Index.d
+  g_pkg_flg = $g_pkg_flg  -bs-package-output es6:src/pages
+build  src/bindings/Gatsby.reast : build_ast_from_re $src_root_dir/src/bindings/Gatsby.re
+build  src/bindings/Gatsby.d : mk_deps src/bindings/Gatsby.reast
+build  src/bindings/Gatsby-FirstGatsbyReason.cmj |  src/bindings/Gatsby-FirstGatsbyReason.cmi $src_root_dir/src/bindings/Gatsby.bs.js : ml_cmj_cmi src/bindings/Gatsby.reast ||  src/bindings/Gatsby.d
+  g_pkg_flg = $g_pkg_flg  -bs-package-output es6:src/bindings
+rule build_package
+  command = $bsc -w -49 -color always -no-alias-deps  $in
+  restat = 1
+  description = [34mBuilding[39m [2m${out}[22m
+build  FirstGatsbyReason.cmi : build_package FirstGatsbyReason.mlmap
